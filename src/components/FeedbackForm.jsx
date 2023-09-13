@@ -2,8 +2,9 @@ import { useState } from "react";
 import Card from "./shared/Card";
 import Button from "./shared/Button";
 import RatingSelect from "./RatingSelect";
+import PropTypes from "prop-types";
 
-function FeedbackForm() {
+function FeedbackForm({ handleAdd }) {
   const [text, setText] = useState("");
   const [btnDisabled, setBtnDisabled] = useState(true);
   const [message, setMessage] = useState("");
@@ -16,7 +17,7 @@ function FeedbackForm() {
     if (newText === "") {
       setBtnDisabled(true);
       setMessage(null);
-    } else if (newText !== "" && newText.trim().length < 10) {
+    } else if (newText !== "" && newText.trim().length <= 10) {
       setMessage("Text must be atleast 10 characters");
       setBtnDisabled(true);
     } else {
@@ -24,9 +25,21 @@ function FeedbackForm() {
       setBtnDisabled(false);
     }
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (text.trim().length > 10) {
+      const newFeedback = {
+        text,
+        rating,
+      };
+      handleAdd(newFeedback);
+      setText("");
+    }
+  };
   return (
     <Card>
-      <form>
+      <form onSubmit={handleSubmit}>
         <h2>How would you rate your service with us?</h2>
         <RatingSelect select={(rating) => setRating(rating)} />
         <div className="input-group">
@@ -47,4 +60,7 @@ function FeedbackForm() {
   );
 }
 
+FeedbackForm.propTypes = {
+  handleAdd: PropTypes.func,
+};
 export default FeedbackForm;
